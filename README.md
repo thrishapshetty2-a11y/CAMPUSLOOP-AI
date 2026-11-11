@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CampusLoop AI — Intelligent Campus & Hostel Problem Resolution Platform
 **Theme: Build for Campus** · Flask + SQLite + Pillow · runs offline, no API keys
 
@@ -77,3 +78,7 @@ with strict filename pattern, 12 MB request cap, parameterised SQL, Jinja autoes
 - The photo-relevance AI needs an API key + internet (it was tested here with a mocked model; run it once with your key before the demo). It judges *what the photo shows*; it can't prove a real problem exists or catch a staged scene. Next: EXIF geotag/time check.
 - Registration trusts roll number + email from the CSV (no email OTP). Next: college SSO / OTP, roster import from the ERP.
 - Next: email/WhatsApp notifications, SLA timers per category, warden role per block, PostgreSQL + object storage, mobile PWA.
+=======
+# CAMPUSLOOP-AI
+AI-powered campus and hostel complaint management platform
+>>>>>>> 22b11c05d5cb2ce1f95f1ffd93e05b19351164e4
