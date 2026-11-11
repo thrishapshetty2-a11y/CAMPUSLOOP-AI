@@ -1,0 +1,20 @@
+{% extends 'base.html' %}{% block body %}
+<section class="hero">
+  <h1>Campus problems get fixed<br>when the loop is <em>closed</em>.</h1>
+  <p>Report with photo evidence. AI merges duplicates and ranks by urgency &amp; collective impact. Admins fix it with proof. <b>You</b> confirm it's really fixed.</p>
+  <div class="cta">{% if me %}<a class="btn" href="{{ url_for('dashboard') }}">Open my loop</a>{% else %}<a class="btn" href="{{ url_for('register') }}">Get started</a><a class="btn ghost" href="{{ url_for('login') }}">Sign in</a>{% endif %}</div>
+</section>
+<section class="stats">
+  <div><b>{{ stats.total }}</b><span>complaints tracked</span></div>
+  <div><b>{{ stats.merged }}</b><span>duplicates auto-merged</span></div>
+  <div><b>{{ stats.resolved }}</b><span>verified resolutions</span></div>
+  <div><b>{{ stats.caught }}</b><span>fake fixes caught by students</span></div>
+</section>
+<section class="grid3">
+  <div class="card"><h3>🔐 Role-based access</h3><p>Every student reaches the <b>Classroom</b> module. <b>Hostel</b> unlocks only after an admin verifies your allotment proof.</p></div>
+  <div class="card"><h3>📸 Evidence that holds up</h3><p>Photos are validated (real image, not blank) and fingerprinted — recycled photos are rejected. Fixes need an <i>after</i> photo that differs from the <i>before</i>.</p></div>
+  <div class="card"><h3>🧠 Explainable AI triage</h3><p>Duplicate detection, recurring-issue spotting and a priority score from urgency, severity, impact, waiting time and failed fixes — with the reasons shown.</p></div>
+  <div class="card"><h3>👥 Collective impact</h3><p>"Me too" instead of 40 identical complaints. More students affected ⇒ higher priority.</p></div>
+  <div class="card"><h3>✅ Student-verified closure</h3><p>An issue only closes when affected students confirm. Reject a bad fix and it re-opens at higher priority.</p></div>
+  <div class="card"><h3>📊 Hotspot analytics</h3><p>Admins see recurring problem spots, resolution time and how often fixes fail verification.</p></div>
+</section>{% endblock %}

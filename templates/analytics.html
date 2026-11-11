@@ -1,0 +1,15 @@
+{% extends 'base.html' %}{% block body %}
+<h1>Analytics</h1>
+<section class="stats">
+<div><b>{{ '%.1f'|format(avg) if avg else '—' }}h</b><span>avg time to verified fix</span></div>
+<div><b>{{ merged }}</b><span>duplicates merged by AI</span></div>
+<div><b>{{ recurring }}</b><span>recurring issues flagged</span></div>
+<div><b>{{ bad }}/{{ fixed+bad }}</b><span>student votes rejecting a fix</span></div></section>
+<div class="two">
+<div class="card"><h3>🔥 Hotspots <span class="muted sm">same place &amp; category, last 60 days</span></h3>
+{% if not hot %}<p class="muted">No repeated hotspots yet.</p>{% endif %}
+<table class="tbl">{% for h in hot %}<tr><td><b>{{ h.category }}</b><div class="muted sm">{{ h.module }} · {{ h.loc }}</div></td><td class="num">{{ h.n }} reports</td><td class="num">{{ h.open_n }} open</td></tr>{% endfor %}</table>
+<p class="muted sm">Repeated hotspots point to a root cause (wiring, plumbing line, equipment age) — not just one-off repairs.</p></div>
+<div class="card"><h3>Complaints by category</h3>{% set mx = by_cat[0].n if by_cat else 1 %}
+{% for r in by_cat %}<div class="bar"><span>{{ r.category }} <i class="muted">{{ r.module }}</i></span><div><u style="width:{{ (r.n/mx*100)|round }}%"></u></div><b>{{ r.n }}</b></div>{% endfor %}</div></div>
+<div class="card"><h3>Accountability</h3><p>Of {{ fixed+bad }} verification votes, <b>{{ bad }}</b> rejected the admin's fix and <b>{{ reopened }}</b> complaint(s) were re-opened — issues that would have been silently "closed" in a normal complaint box.</p></div>{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}{% from '_m.html' import prio, status, csrf_in with context %}{% block body %}
+<div class="head"><div><a class="muted sm" href="{{ url_for('module_list', module=c.module) }}">← {{ c.module|capitalize }} issues</a>
+<h1>#{{ c.id }} {{ c.title }}</h1>
+<div class="tags">{{ prio(c) }}{{ status(c) }}<span class="chip">{{ c.module }}</span><span class="badge">{{ c.category }}</span><span class="badge">👥 {{ n }} affected</span>
+{% if c.recurring %}<span class="badge warn">↻ recurring issue</span>{% endif %}{% if c.reopen_count %}<span class="badge bad">re-opened {{ c.reopen_count }}×</span>{% endif %}</div></div>
+{% if me.role!='admin' and c.status!='resolved' and not is_affected %}<form method="post" action="{{ url_for('support', cid=c.id) }}">{{ csrf_in() }}<button class="btn">🙋 I face this too</button></form>{% endif %}</div>
+
+<div class="two">
+<div>
+  <div class="card"><h3>The problem</h3><p>{{ c.description }}</p><p class="muted">📍 {{ c.location }} · reported by {{ c.reporter }} · {{ c.created_at|dt }}</p>
+    {% if c.photo %}<figure><img class="big" src="{{ url_for('uploads', name=c.photo) }}" alt="Problem photo"><figcaption>Before — evidence from reporter ·
+      {% if c.photo_status=='verified' %}<span class="ok">✔ AI-verified as relevant</span>{% elif c.photo_status=='flagged' %}<span class="badge bad">flagged: not relevant</span>{% else %}<span class="badge warn">awaiting admin review</span>{% endif %}</figcaption></figure>
+    {% if c.photo_status=='flagged' %}<div class="flash bad">Photo flagged: {{ c.photo_note }}
+      {% if me.id==c.reporter_id %}<form method="post" action="{{ url_for('replace_photo', cid=c.id) }}" enctype="multipart/form-data">{{ csrf_in() }}<input type="file" name="photo" accept="image/*" required><button class="btn sm">Upload a relevant photo</button></form>{% else %} The reporter has been asked to replace it.{% endif %}</div>
+    {% elif me.role=='admin' and c.status!='resolved' %}<form method="post" action="{{ url_for('admin_flag_photo', cid=c.id) }}" class="inline-form">{{ csrf_in() }}<input name="reason" placeholder="Why is this photo not relevant?"><button class="btn sm ghost">Flag photo</button></form>{% endif %}{% endif %}
+    {% if children %}<h4>Merged duplicate reports ({{ children|length }})</h4>{% for k in children %}<div class="match"><div>#{{ k.id }} {{ k.title }}<div class="muted">{{ k.reporter }} · AI similarity {{ k.link_score }}</div></div>
+      {% if me.role=='admin' %}<form method="post" action="{{ url_for('admin_unlink', cid=k.id) }}">{{ csrf_in() }}<button class="btn sm ghost">Not a duplicate</button></form>{% endif %}</div>{% endfor %}{% endif %}</div>
+
+  {% if latest %}<div class="card"><h3>Resolution proof</h3>
+    <p>{{ latest.note }}</p><p class="muted">by {{ latest.admin }} · {{ latest.created_at|dt }}</p>
+    <figure><img class="big" src="{{ url_for('uploads', name=latest.photo) }}" alt="After photo"><figcaption>After — uploaded by admin</figcaption></figure>
+    {% if c.status=='pending_verification' %}
+      <div class="callout"><b>Student verification:</b> ✔ {{ fixed }} fixed · ✖ {{ bad }} not fixed (of {{ n }} affected). Window closes {{ c.verify_deadline|dt }} UTC.
+      {% if is_affected and not my_vote and me.role!='admin' %}
+        <form method="post" action="{{ url_for('verify', cid=c.id) }}" class="vote">{{ csrf_in() }}<input name="comment" placeholder="Optional comment (what's still wrong?)" maxlength="300">
+        <button class="btn" name="verdict" value="fixed">✔ Yes, it's fixed</button><button class="btn bad" name="verdict" value="not_fixed">✖ Not fixed</button></form>
+      {% elif my_vote %}<p class="ok">You voted: {{ 'fixed' if my_vote.verdict=='fixed' else 'not fixed' }}.</p>{% endif %}</div>
+    {% elif c.status=='resolved' %}<div class="flash ok">✔ Verified by students ({{ fixed }} confirmed).</div>{% endif %}
+    {% if votes %}<ul class="votes">{% for v in votes %}<li>{{ '✔' if v.verdict=='fixed' else '✖' }} {{ v.name }}{% if v.comment %} — “{{ v.comment }}”{% endif %}</li>{% endfor %}</ul>{% endif %}
+  </div>{% endif %}
+
+  {% if me.role=='admin' and c.status!='resolved' and c.status!='pending_verification' %}
+  <div class="card admin"><h3>🛠 Admin actions</h3>
+    {% if c.status=='open' %}<form method="post" action="{{ url_for('admin_progress', cid=c.id) }}" class="inline-form">{{ csrf_in() }}<input name="note" placeholder="Note (e.g. technician assigned)"><button class="btn alt">Start work</button></form><hr>{% endif %}
+    <form method="post" action="{{ url_for('admin_resolve', cid=c.id) }}" enctype="multipart/form-data">{{ csrf_in() }}
+      <label>What was done?<textarea name="note" rows="2" required placeholder="Replaced the lamp unit and tested for 10 minutes."></textarea></label>
+      <label>“After” photo (mandatory proof)<input type="file" name="photo" accept="image/*" capture="environment" required></label>
+      <button class="btn">Submit for student verification</button></form></div>{% endif %}
+</div>
+
+<aside>
+  <div class="card"><h3>🧠 Why this priority?</h3>
+    <table class="why">{% for name, pts, detail in c.priority_why|factors %}<tr><td><b>{{ name }}</b><div class="muted sm">{{ detail }}</div></td><td class="num">+{{ pts }}</td></tr>{% endfor %}
+    <tr class="tot"><td>Total (max 100)</td><td class="num">{{ c.priority_score|round(1) }}</td></tr></table></div>
+  <div class="card"><h3>Timeline</h3><ol class="tl">{% for a in log %}<li><span>{{ a.text }}</span><time>{{ a.created_at|dt }}</time></li>{% endfor %}</ol></div>
+</aside></div>{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}{% from '_m.html' import prio, status with context %}{% block body%}
+<h1>Hi {{ me.name.split()[0] }} 👋</h1>
+<div class="actions">
+  <a class="btn" href="{{ url_for('report', module='classroom') }}">+ Report classroom issue</a>
+  {% if me.hostel_status == 'verified' %}<a class="btn alt" href="{{ url_for('report', module='hostel') }}">+ Report hostel issue</a>
+  {% else %}<a class="btn ghost" href="{{ url_for('hostel_verify') }}">🔒 Unlock hostel module{% if me.hostel_status=='pending' %} (pending){% endif %}</a>{% endif %}
+</div>
+{% if need %}<section class="callout"><h2>🔔 Please verify these fixes ({{ need|length }})</h2><p class="muted">Admins say these are fixed. Is it true? Your answer decides whether the complaint closes.</p>
+{% for c in need %}<a class="row" href="{{ url_for('complaint', cid=c.id) }}"><b>#{{ c.id }} {{ c.title }}</b><span>{{ c.location }}</span><span class="go">Review proof →</span></a>{% endfor %}</section>{% endif %}
+<h2>My complaints &amp; supported issues</h2>
+{% if not mine %}<div class="card muted">Nothing yet. Spotted a broken projector or a leaking tap? Report it — it takes a minute.</div>{% endif %}
+<div class="list">{% for c in mine %}
+<a class="item" href="{{ url_for('complaint', cid=c.related_to or c.id) }}">
+  <div><span class="chip">{{ c.module }}</span> <b>#{{ c.id }} {{ c.title }}</b><div class="muted">{{ c.category }} · {{ c.location }} · {{ c.created_at|ago }}</div></div>
+  <div class="right">{{ status(c) }}{% if c.related_to %}<span class="badge">merged → #{{ c.related_to }}</span>{% endif %}</div></a>{% endfor %}</div>{% endblock %}

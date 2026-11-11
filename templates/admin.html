@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% from '_m.html' import prio, status, csrf_in with context %}{% block body %}
+<div class="head"><h1>Control room</h1><div class="tabs"><a href="?" class="{{ '' if module else 'on' }}">All</a><a href="?module=classroom" class="{{ 'on' if module=='classroom' }}">Classroom</a><a href="?module=hostel" class="{{ 'on' if module=='hostel' }}">Hostel</a></div></div>
+<section class="stats">{% for k,v in STATUS_LABEL.items() %}<div><b>{{ counts[k] }}</b><span>{{ v }}</span></div>{% endfor %}</section>
+<h2>Priority queue <span class="muted sm">AI-ranked · duplicates already merged</span></h2>
+<div class="list">{% for c in rows %}
+<a class="item" href="{{ url_for('complaint', cid=c.id) }}">
+  {% if c.photo %}<img class="thumb" src="{{ url_for('uploads', name=c.photo) }}" alt="">{% else %}<div class="thumb none">no photo</div>{% endif %}
+  <div class="grow"><b>#{{ c.id }} {{ c.title }}</b><div class="muted">{{ c.module }} · {{ c.category }} · {{ c.location }} · {{ c.created_at|ago }}</div>
+  <div class="tags">{{ prio(c) }}{{ status(c) }}<span class="badge">👥 {{ impact[c.id] }}</span>{% if dupes[c.id] %}<span class="badge info">{{ dupes[c.id] }} duplicate(s) merged</span>{% endif %}{% if c.recurring %}<span class="badge warn">↻ recurring</span>{% endif %}{% if c.reopen_count %}<span class="badge bad">re-opened {{ c.reopen_count }}×</span>{% endif %}</div></div></a>
+{% else %}<div class="card muted">Queue is empty 🎉</div>{% endfor %}</div>{% endblock %}

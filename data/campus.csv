@@ -1,0 +1,52 @@
+module,building,place
+classroom,Academic Block A,Room 101
+classroom,Academic Block A,Room 102
+classroom,Academic Block A,Room 103
+classroom,Academic Block A,Room 201
+classroom,Academic Block A,Room 202
+classroom,Academic Block A,Room 203
+classroom,Academic Block B,Lecture Hall 301
+classroom,Academic Block B,Lecture Hall 302
+classroom,Academic Block B,Room 204
+classroom,Academic Block B,Room 205
+classroom,Academic Block C,Room 105
+classroom,Academic Block C,Room 106
+classroom,Academic Block C,Room 107
+classroom,Academic Block C,Room 305
+classroom,Lab Complex,Computer Lab 1
+classroom,Lab Complex,Computer Lab 2
+classroom,Lab Complex,Physics Lab
+classroom,Lab Complex,Electronics Lab
+classroom,Seminar Hall,Main Hall
+classroom,Library,Reading Hall
+hostel,Block A,Ground Floor Washroom
+hostel,Block A,Floor 1 Corridor
+hostel,Block A,Floor 1 Washroom
+hostel,Block A,Floor 2 Corridor
+hostel,Block A,Floor 2 Washroom
+hostel,Block A,Floor 3 Corridor
+hostel,Block A,Floor 3 Washroom
+hostel,Block A,Terrace
+hostel,Block A,My own room
+hostel,Block B,Ground Floor Washroom
+hostel,Block B,Floor 1 Corridor
+hostel,Block B,Floor 1 Washroom
+hostel,Block B,Floor 2 Corridor
+hostel,Block B,Floor 2 Washroom
+hostel,Block B,Floor 3 Corridor
+hostel,Block B,Floor 3 Washroom
+hostel,Block B,Terrace
+hostel,Block B,My own room
+hostel,Block C,Ground Floor Washroom
+hostel,Block C,Floor 1 Corridor
+hostel,Block C,Floor 1 Washroom
+hostel,Block C,Floor 2 Corridor
+hostel,Block C,Floor 2 Washroom
+hostel,Block C,Floor 3 Corridor
+hostel,Block C,Floor 3 Washroom
+hostel,Block C,Terrace
+hostel,Block C,My own room
+hostel,Common Areas,Mess Hall
+hostel,Common Areas,Hostel Gate
+hostel,Common Areas,Common Room
+hostel,Common Areas,Laundry Area

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}{% from '_m.html' import prio, status with context %}{% block body%}
+<div class="head"><h1>{{ 'Classroom' if module=='classroom' else 'Hostel' }} issues <span class="muted sm">sorted by AI priority</span></h1>
+{% if me.role != 'admin' %}<a class="btn" href="{{ url_for('report', module=module) }}">+ Report issue</a>{% endif %}</div>
+<form class="filters" method="get">
+  <select name="category" onchange="this.form.submit()"><option value="">All categories</option>{% for k in cats %}<option {{ 'selected' if k==cat }}>{{ k }}</option>{% endfor %}</select>
+  <select name="status" onchange="this.form.submit()"><option value="">Active only</option>{% for k,v in STATUS_LABEL.items() %}<option value="{{ k }}" {{ 'selected' if k==status }}>{{ v }}</option>{% endfor %}</select>
+</form>
+{% if not rows %}<div class="card muted">No issues match. 🎉</div>{% endif %}
+<div class="list">{% for c in rows %}
+<a class="item" href="{{ url_for('complaint', cid=c.id) }}">
+  {% if c.photo %}<img class="thumb" src="{{ url_for('uploads', name=c.photo) }}" alt="">{% else %}<div class="thumb none">no photo</div>{% endif %}
+  <div class="grow"><b>#{{ c.id }} {{ c.title }}</b>
+    <div class="muted">{{ c.category }} · {{ c.location }} · by {{ c.reporter }} · {{ c.created_at|ago }}</div>
+    <div class="tags">{{ prio(c) }}{{ status(c) }}<span class="badge">👥 {{ impact[c.id] }} affected</span>{% if c.recurring %}<span class="badge warn">↻ recurring</span>{% endif %}{% if c.reopen_count %}<span class="badge bad">re-opened {{ c.reopen_count }}×</span>{% endif %}</div></div></a>{% endfor %}</div>
+<p class="muted sm"><a href="?show=all">Show closed too</a></p>{% endblock %}

@@ -1,0 +1,5 @@
+{% extends 'base.html' %}{% block body %}
+<div class="card narrow"><h2>🏠 Hostel module</h2>
+{% if u.hostel_status == 'verified' %}<div class="flash ok">You're a registered resident — Block {{ u.hostel_block }}, Room {{ u.room_no }}.</div><a class="btn" href="{{ url_for('module_list', module='hostel') }}">Open hostel module</a>
+{% else %}<div class="flash warn">🔒 Locked. The hostel module is only for students listed as hostel residents in the college hostel roster.</div>
+<p class="muted">Your account ({{ u.email }}) is not listed against a hostel block. If this is a mistake, ask the hostel office to update the roster (<code>data/students.csv</code>) — access updates automatically.</p>{% endif %}</div>{% endblock %}

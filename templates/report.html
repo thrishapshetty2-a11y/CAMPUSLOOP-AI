@@ -1,0 +1,38 @@
+{% extends 'base.html' %}{% block body %}
+<div class="card form"><h1>Report a {{ module }} issue</h1>
+{% if matches %}<section class="callout warn"><h3>🧠 AI found similar open reports</h3><p class="muted">Is yours the same problem? Adding your support is faster and raises the priority for everyone.</p>
+{% for c, s, why in matches %}<div class="match"><div><b>#{{ c.id }} {{ c.title }}</b><div class="muted">{{ c.location }} · {{ (s*100)|round|int }}% match — {{ why|join(', ') }}</div></div>
+<form method="post" action="{{ url_for('support', cid=c.id) }}">{% from '_m.html' import csrf_in with context %}{{ csrf_in() }}<button class="btn sm">Same problem — add me</button></form></div>{% endfor %}</section>{% endif%}
+<form method="post" enctype="multipart/form-data" id="rf">{% from '_m.html' import csrf_in with context %}{{ csrf_in() }}
+<input type="hidden" name="photo_file" value="{{ photo_name }}"><input type="hidden" name="photo_hash" value="{{ photo_hash }}">
+{% if matches %}<input type="hidden" name="force" value="1">{% endif %}
+<label>Category<select name="category" id="cat" required><option value="">Select…</option>{% for k, pr in cats.items() %}<option value="{{ k }}" data-photo="{{ 1 if pr else 0 }}" {{ 'selected' if form.category==k }}>{{ k }}{{ ' 📸' if pr }}</option>{% endfor %}</select></label>
+<label>Short title<input name="title" id="title" maxlength="120" value="{{ form.title }}" placeholder="e.g. Projector not turning on" required></label>
+<label>What's wrong?<textarea name="description" id="desc" rows="4" placeholder="Describe the problem, since when, and who it affects." required>{{ form.description }}</textarea></label>
+<label>Building<select name="building" id="bld" required></select></label>
+<label>Place<select name="place" id="plc" required></select></label>
+<label>Photo evidence <span id="req" class="muted">(mandatory for 📸 categories)</span>{% if ai_on %} <span class="badge info">AI checks the photo is relevant</span>{% endif %}
+  <input type="file" name="photo" id="photo" accept="image/*" capture="environment">{% if photo_name %}<small class="ok">✔ Photo already attached — you can leave this empty.</small>{% endif %}</label>
+<div id="live" class="callout warn" hidden></div>
+<button class="btn">{{ 'My issue is different — submit as new' if matches else 'Submit complaint' }}</button></form></div>
+<script>
+const LOCS={{ locs|tojson }},FB={{ form.building|tojson }},FP={{ form.place|tojson }};
+const bld=document.getElementById('bld'),plc=document.getElementById('plc');
+bld.innerHTML='<option value="">Select building…</option>'+Object.keys(LOCS).map(b=>`<option ${b===FB?'selected':''}>${b}</option>`).join('');
+function fillPlaces(sel){plc.innerHTML='<option value="">Select place…</option>'+((LOCS[bld.value]||[]).map(p=>`<option ${p===sel?'selected':''}>${p}</option>`).join(''));}
+fillPlaces(FP);bld.addEventListener('change',()=>{fillPlaces('');check&&check();});plc.addEventListener('change',()=>check&&check());
+const cat=document.getElementById('cat'),ph=document.getElementById('photo'),req=document.getElementById('req');
+const hasPhoto={{ 'true' if photo_name else 'false' }};
+function sync(){const o=cat.selectedOptions[0];const need=o&&o.dataset.photo==='1';ph.required=need&&!hasPhoto;req.textContent=need?'(required for this category)':'(optional for this category)';}
+cat.addEventListener('change',sync);sync();
+{% if not matches %}
+var check;let t;const live=document.getElementById('live');
+check=function(){clearTimeout(t);t=setTimeout(async()=>{
+  const q=new URLSearchParams({module:'{{ module }}',category:cat.value,location:bld.value+', '+plc.value,text:document.getElementById('title').value+' '+document.getElementById('desc').value});
+  const r=await fetch('{{ url_for("api_similar") }}?'+q);const d=await r.json();
+  if(!d.length){live.hidden=true;return;}
+  live.hidden=false;live.innerHTML='<b>🧠 Similar open reports:</b>'+d.map(x=>`<div class="match"><div><a href="/complaint/${x.id}" target="_blank">#${x.id} ${x.title.replace(/</g,'&lt;')}</a><div class="muted">${x.location.replace(/</g,'&lt;')} · ${Math.round(x.score*100)}% match</div></div></div>`).join('');
+},500);};
+['title','desc'].forEach(i=>document.getElementById(i).addEventListener('input',check));cat.addEventListener('change',check);
+{% endif %}
+</script>{% endblock %}

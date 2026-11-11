@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}CampusLoop AI{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head><body>
+<header class="nav"><div class="wrap navin">
+  <a class="brand" href="{{ url_for('home') }}"><span class="logo">⟲</span> CampusLoop <b>AI</b></a>
+  <nav>
+  {% if me %}
+    {% if me.role == 'admin' %}
+      <a href="{{ url_for('admin') }}">Control room{% if nav_pending %} <i class="dot">{{ nav_pending }}</i>{% endif %}</a>
+      <a href="{{ url_for('analytics') }}">Analytics</a>
+      <a href="{{ url_for('module_list', module='classroom') }}">Classroom</a>
+      <a href="{{ url_for('module_list', module='hostel') }}">Hostel</a>
+    {% else %}
+      <a href="{{ url_for('dashboard') }}">My loop{% if nav_pending %} <i class="dot">{{ nav_pending }}</i>{% endif %}</a>
+      <a href="{{ url_for('module_list', module='classroom') }}">Classroom</a>
+      <a href="{{ url_for('module_list', module='hostel') }}">Hostel{% if me.hostel_status != 'verified' %} 🔒{% endif %}</a>
+    {% endif %}
+    <form method="post" action="{{ url_for('logout') }}" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="link">Sign out ({{ me.name.split()[0] }})</button></form>
+  {% else %}
+    <a href="{{ url_for('login') }}">Sign in</a><a class="btn sm" href="{{ url_for('register') }}">Register</a>
+  {% endif %}
+  </nav></div></header>
+<main class="wrap">
+  {% with msgs = get_flashed_messages(with_categories=true) %}{% for cat, m in msgs %}<div class="flash {{ cat }}">{{ m }}</div>{% endfor %}{% endwith %}
+  {% block body %}{% endblock %}
+</main>
+<footer class="wrap foot">CampusLoop AI · Build for Campus · transparent, accountable, student-verified.</footer>
+</body></html>

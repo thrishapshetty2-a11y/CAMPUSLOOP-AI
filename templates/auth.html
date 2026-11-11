@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% block body %}
+<div class="card narrow"><h2>{{ 'Create your account' if mode=='register' else 'Welcome back' }}</h2>
+<form method="post">{% from '_m.html' import csrf_in with context %}{{ csrf_in() }}
+{% if mode=='register' %}<label>College roll number<input name="roll_no" placeholder="e.g. CS21006" required></label>{% endif %}
+<label>College email<input type="email" placeholder="must match the college student list" name="email" required></label>
+<label>Password<input type="password" name="password" required minlength="6"></label>
+<button class="btn">{{ 'Register' if mode=='register' else 'Sign in' }}</button></form>
+{% if mode=='login' %}<p class="muted">New here? <a href="{{ url_for('register') }}">Register</a></p>
+<details class="muted"><summary>Demo accounts</summary><p>Admin: <code>admin@campus.edu</code> / <code>admin123</code><br>Hostel resident: <code>aarav@campus.edu</code> / <code>student123</code><br>Day scholar: <code>meera@campus.edu</code> / <code>student123</code></p><p>To try registering: roll <code>CS21010</code> + <code>priya@campus.edu</code> (hostel Block B).</p></details>
+{% else %}<p class="muted">Only students in the college roster can register — your name and hostel details are filled in from it automatically.</p><p class="muted">Already registered? <a href="{{ url_for('login') }}">Sign in</a></p>{% endif %}</div>{% endblock %}
